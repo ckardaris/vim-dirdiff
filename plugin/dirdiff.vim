@@ -414,21 +414,31 @@ function <SID>ToggleHex()
 endfunction
 
 function! <SID>DirDiffHexmode()
-    wincmd k
-    call <SID>ToggleHex()
-    wincmd l
-    call <SID>ToggleHex()
+    " Support hex mode only for existing files (not directories).
+    if filereadable(s:FilenameA)
+        call <SID>GotoFileAWindow()
+        call <SID>ToggleHex()
+    endif
+    if filereadable(s:FilenameB)
+        call <SID>GotoFileBWindow()
+        call <SID>ToggleHex()
+    endif
     " Go back to the diff window
-    wincmd j
+    call <SID>GotoDiffWindow()
 endfunction
 
 function! <SID>DirDiffWrapmode()
-    wincmd k
-    setlocal wrap!
-    wincmd l
-    setlocal wrap!
+    " Support wrap mode only for existing files (not directories).
+    if filereadable(s:FilenameA)
+        call <SID>GotoFileAWindow()
+        setlocal wrap!
+    endif
+    if filereadable(s:FilenameB)
+        call <SID>GotoFileBWindow()
+        setlocal wrap!
+    endif
     " Go back to the diff window
-    wincmd j
+    call <SID>GotoDiffWindow()
 endfunction
 
 function! <SID>EscapeFileName(path)
@@ -457,6 +467,14 @@ function! <SID>Drop(fname)
     else
         exe 'edit ' a:fname
     endif
+endfunction
+
+function! <SID>GotoFileAWindow()
+    call <SID>Drop(s:FilenameA)
+endfunction
+
+function! <SID>GotoFileBWindow()
+    call <SID>Drop(s:FilenameB)
 endfunction
 
 function! <SID>GotoDiffWindow()
