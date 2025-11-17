@@ -511,7 +511,11 @@ function! <SID>DirDiffOpen()
                 let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
                 call <SID>Drop(previousFile)
                 silent exec "edit ".fileToOpen
-                silent exec "bd ".bufnr(previousFile)
+                " The Netrw plugin creates an 'unlisted' buffer for directories.
+                " Running 'bd {buffer}' on an unlisted buffer produces the following error:
+                " E516: No buffers were deleted.
+                " Suppress the error with 'silent!'.
+                silent! exec "bd ".bufnr(previousFile)
             endif
         else
             silent exec "split ".fileToOpen
@@ -541,7 +545,11 @@ function! <SID>DirDiffOpen()
                 let previousFile = (s:LastMode == "A") ? previousFileA : previousFileB
                 call <SID>Drop(previousFile)
                 silent exec "edit ".s:FilenameB
-                silent exec "bd ".bufnr(previousFile)
+                " The Netrw plugin creates an 'unlisted' buffer for directories.
+                " Running 'bd {buffer}' on an unlisted buffer produces the following error:
+                " E516: No buffers were deleted.
+                " Suppress the error with 'silent!'.
+                silent! exec "bd ".bufnr(previousFile)
                 diffthis
 
                 " To ensure that A is on the left and B on the right, splitright must be off
