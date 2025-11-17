@@ -465,7 +465,19 @@ function! <SID>Drop(fname)
     if winid > 0
         call win_gotoid(winid)
     else
-        exe 'edit ' a:fname
+        " If the Netrw plugin is configured in tree style listing mode
+        " (i.e. g:netrw_liststyle = 3), then a buffer named 'NetrwTreeListing'
+        " is shown (i.e. active window). This happens only after the original
+        " buffer, which has the directory as its name, is focused for the first
+        " time. We work around this by comparing the 'netrw_curdir' variable of
+        " the 'NetrwTreeListing' buffer against the directory name.
+        let netrw_buffer = bufnr("NetrwTreeListing")
+        let netrw_winid = bufwinid(netrw_buffer)
+        if netrw_winid > 0 && a:fname == getbufvar(netrw_buffer, "netrw_curdir")
+            call win_gotoid(netrw_winid)
+        else
+            exe 'edit ' a:fname
+        endif
     endif
 endfunction
 
